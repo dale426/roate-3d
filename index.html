@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="target-densitydpi=320,width=640,user-scalable=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="roate.css">
+    <script src="./jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="main">
+        <div class="roate-3d">
+            <div class="wrap-page1">
+                <div class="page1 page-content">
+                    <div class="wrap-item">
+                        <span class="text">第一张</span>
+                    </div>
+                    <!-- <img width="100%" height="100%" src="./img/001.webp" alt=""> -->
+                </div>
+                <div class="page2 page-content">
+                    <div class="wrap-item">
+                        <span class="text">2222</span>
+                    </div>
+                    <!-- <img width="100%" height="100%" src="./img/002.webp" alt=""> -->
+                </div>
+                <div class="page3 page-content">
+                    <div class="wrap-item">
+                        <span class="text">第333张</span>
+                    </div>
+                    <!-- <img width="100%" height="100%" src="./img/003.webp" alt=""> -->
+                </div>
+                <div class="page4 page-content">
+                    <div class="wrap-item">
+                        <span class="text">第444张</span>
+                    </div>
+                    <!-- <img width="100%" height="100%" src="./img/004.webp" alt=""> -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script>
+    var roateObj = {
+        _dge: -1, // 角度
+    }
+
+    Object.defineProperty(roateObj, 'dge', {
+        get: function () {
+            return this._dge
+        },
+        set: function (newVal) {
+            this._dge = newVal
+            roateFn(newVal)
+        }
+    })
+
+
+    var $box = $('.wrap-page1');
+    var startPos;
+    $box.on('touchstart', function (event) {
+        var touch = event.targetTouches[0];
+        startPos = {
+            x: touch.pageX,
+            y: touch.pageY,
+            time: +new Date
+        }; //取第一个touch的坐标值
+
+
+    })
+
+
+    $box.on('touchmove', function (event) {
+        var touch = event.targetTouches[0];
+        var endPos = {
+            x: touch.pageX - startPos.x,
+            y: touch.pageY - startPos.y
+        };
+        var isScrolling = Math.abs(endPos.x) < Math.abs(endPos.y) ? 1 : 0; //isScrolling为1时，表示纵向滑动，0为横向滑动
+        if (isScrolling === 0) {
+            if (compare(touch.pageX - startPos.x)) {
+                roateObj.dge += 1
+            } else {
+                roateObj.dge -= 1
+            }
+
+        }
+
+    })
+    // 闭包判断
+    var compare = (function () {
+        var oldVal = 0;
+        return function (newVal) {
+            if (newVal > oldVal) {
+                oldVal = newVal
+                return true
+            } else {
+                oldVal = newVal
+                return false
+            }
+        }
+    })()
+    // 更改视图
+    function roateFn(dge) {
+        var n = dge % 90 // 旋转度数
+
+        console.log('dge', dge);
+
+
+        var elementNum = Math.floor(dge / 90);
+
+        if (n === 0) {
+            var $ele0 = $(".page-content:eq( " + (elementNum - 1) + ")")
+            var lastRow =
+                $ele0.css("transform", "perspective(700px) rotateY(" + (90) + "deg)")
+        }
+        // 第一张开始
+        var $ele = $(".page-content:eq( " + elementNum + ")")
+        $ele.css("transform", "perspective(700px) rotateY(" + n + "deg)")
+        // 上一张
+        var $ele2 = $(".page-content:eq( " + (elementNum + 1) + ")")
+        $ele2.css("transform", "perspective(700px) rotateY(" + (n - 90) + "deg)")
+    }
+</script>
+
+</html>
